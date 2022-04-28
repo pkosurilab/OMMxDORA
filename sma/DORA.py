@@ -819,9 +819,9 @@ def graph(plot_type, *graph_parameters):
 
             # choose scatter plot or line plot
             if graph_style == 'scatter':
-                ax.scatter(times, conti_angle, c='b', s=5)
+                ax.scatter(times, conti_angle, c='m', s=5)
             else:
-                line, = plt.plot(times, conti_angle, 'b')
+                line, = plt.plot(times, conti_angle, 'm')
 
             # setting up for making vertical lines or indications of bad points (high and low points)
             ang_min = min(conti_angle)
@@ -892,9 +892,9 @@ def graph(plot_type, *graph_parameters):
             fig, ax = plt.subplots()
 
             if graph_style == 'scatter':
-                ax.scatter(times, conti_angle, c='b', s=5)
+                ax.scatter(times, conti_angle, c='m', s=5)
             else:
-                line, = plt.plot(times, conti_angle, 'b')
+                line, = plt.plot(times, conti_angle, 'm')
 
             # setting up for making vertical lines or indications of bad points (high and low points)
             ang_min = min(conti_angle)
