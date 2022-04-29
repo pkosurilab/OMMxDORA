@@ -73,7 +73,7 @@ def disp_hist(file,perCol,perRow):
     
 
     grayImage = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)  #Converts image to gray scale
-    heatmap = cv2.applyColorMap(grayImage, cv2.COLORMAP_MAGMA)  #converst grey scale to color map magma 
+    heatmap = cv2.applyColorMap(grayImage, cv2.COLORMAP_HOT)  #converst grey scale to color map magma 
     
     refPt = []
     
@@ -100,7 +100,14 @@ def disp_hist(file,perCol,perRow):
     #Load in frames for searching
     while k < t:
         imgcrop=heatmap[0:(perCol*30),k*perRow*30:(k+1)*30*perRow]  #Display each frame as a heat map. 
-        cv2.imshow('2D Histogram [PK# t1 t2]',imgcrop )
+        scale_percent = 200 # percent of original size
+        width = int(imgcrop.shape[1] * scale_percent / 100)
+        height = int(imgcrop.shape[0] * scale_percent / 100)
+        dim = (width, height)
+  
+        # resize image
+        resized = cv2.resize(imgcrop, dim, interpolation = cv2.INTER_AREA)
+        cv2.imshow('2D Histogram [PK# t1 t2]',resized )
         cv2.namedWindow('2D Histogram [PK# t1 t2]')
         cv2.setMouseCallback('2D Histogram [PK# t1 t2]', click_event)
         key=cv2.waitKey(0)
