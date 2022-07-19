@@ -21,5 +21,5 @@ def tr_2csv(filename):
 
     for tr in range(0,n_tr):
         trdict=load_trace(trdir +'/'+peaklist[tr]  + '.tr')
-        col=np.array([trdict['xx'],trdict['yy']]).T
+        col=np.array([trdict['xx'],trdict['yy'],trdict['c0int']]).T
         np.savetxt(trcsv +'/'+ peaklist[tr] + '.csv', col, delimiter=',')

@@ -5,6 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
 import numpy as np
+from skimage import io
 import sma_lib.parameters as params
 import sma_lib.fixpar as fixpar
 import math
@@ -22,7 +23,7 @@ import sma_lib.mapcoords as mapcoords
 from PIL import Image
 import sma_lib.loadframetif as loadframetif
 codeversion = "20151208"
-bksize=64 
+
 def ap_tif(filename,xmlname):
     print ("apdax started at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " on file: " + filename)
 
@@ -31,7 +32,7 @@ def ap_tif(filename,xmlname):
     par = fixpar.fix_par(par,filename,'apdax') #function to 'fix' par by reading in needed stuff from setup file, 
     #and making other changes which might be needed based on the settings - 
     #eg round frame numbers to mutiple of 4 if alternating laser on STORM2
-
+    bksize=par.bksize
     if par.emchs == 2:    #read in mapping files
         Pr2l, Qr2l = mapcoords.readmapping(par,'r2l')
         Pl2r, Ql2r = mapcoords.readmapping(par,'l2r')
@@ -81,21 +82,28 @@ def ap_tif(filename,xmlname):
     incr =1
     if par.ALEX4 ==1:
         incr = 2 #go through frames 2 at a time
-    fileptr = Image.open(filename+'.tif') #changed for tif.dax','rb')
-    fileptr.seek(0) #look at frame 0
-    framepar=np.array(fileptr) #load into an array
+    img = io.imread(filename+'.tif', img_num=0)
+    #fileptr = Image.open() #changed for tif
+    #fileptr.seek(0) #look at frame 0
+    framepar=img #load into an array
     y,x=np.shape(framepar) # find the y,x of the array 
-    frtot=fileptr.n_frames # find the total number of frames
+    #T, M, N, C = img.shape
+    frtot=par.apmax_fr    
+    #fileptr = Image.open(filename+'.tif') #changed for tif.dax','rb')
+    #fileptr.seek(0) #look at frame 0
+    #framepar=np.array(fileptr) #load into an array
+    y,x=np.shape(framepar) # find the y,x of the array 
+    #frtot=fileptr.n_frames # find the total number of frames
     ycrop=(y//bksize)*bksize
     xcrop=(x//bksize)*bksize
     #if using constant background subtraction, determine that now:
     if par.bst==0:
         #load first 10 frames to determine background
-        frame = loadframetif.load_tif(fileptr,0)   
+        frame = loadframetif.load_tif(filename,0)   
         frs=frame[:ycrop,:xcrop] #new frame selection based off cropping for smbkgr
         
         for i in range(1,10):
-            frame = loadframetif.load_tif(fileptr,i)
+            frame = loadframetif.load_tif(filename,i)
             frs += frame[:ycrop,:xcrop]
         frs = frs / 10
         fr_bkgd = smbkgr.sm_bkgr(frs,bksize)    
@@ -118,12 +126,12 @@ def ap_tif(filename,xmlname):
             print ("working on : " + str(i) + " " + str(par.apmax_fr) + "at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         
         if par.ALEX4 == 0:
-            frameload = loadframetif.load_tif(fileptr,i)
+            frameload = loadframetif.load_tif(filename,i)
             frame = frameload[:ycrop,:xcrop]
         if par.ALEX4 ==1:
-            frameload = loadframetif.load_tif(fileptr,i)
+            frameload = loadframetif.load_tif(filename,i)
             frame1 = frameload[:ycrop,:xcrop]
-            frameload = loadframetif.load_tif(fileptr,i+1)
+            frameload = loadframetif.load_tif(filename,i+1)
             frame2 = frameload[:ycrop,:xcrop]
             frame = frame1+frame2
         #either way, now work with frame array
@@ -171,7 +179,7 @@ def ap_tif(filename,xmlname):
                 addfr[j] = addfr[j] + 1
         if i%par.outputpartial == 0 and i != 0:
             savetrdir.save_trdir(filename, par,peaks,time_tr, crds_tr,0)
-    fileptr.close()
+    #fileptr.close()
                 
     #print "saving data at" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if par.outtype == 0:

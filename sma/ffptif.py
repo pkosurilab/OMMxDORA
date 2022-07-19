@@ -7,6 +7,7 @@
 #format from user: ffpdax filename xmlfile
 import sys
 from sys import exit
+from skimage import io
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
 import numpy as np
@@ -27,7 +28,7 @@ import cv2
 import sma_lib.mapcoords as mapcoords
 codeversion = "20160215"
 
-bksize=64 #for now have this up here
+#bksize=64 #for now have this up here
 
 
 #12/8/15 - changed architecture to allow multithreading. 
@@ -44,11 +45,15 @@ def ffp_tif(filename,xmlname):
     par = fixpar.fix_par(par,filename,'ffpdax') #function to 'fix' par by reading in needed stuff from setup file, 
     #and making other changes which might be needed based on the settings - 
     #eg round frame numbers to mutiple of 4 if alternating laser on STORM2
-    fileptr = Image.open(filename+'.tif') #changed for tif
-    fileptr.seek(0) #look at frame 0
-    framepar=np.array(fileptr) #load into an array
+    bksize=par.bksize
+    img = io.imread(filename+'.tif', img_num=0)
+    #fileptr = Image.open() #changed for tif
+    #fileptr.seek(0) #look at frame 0
+    framepar=img #load into an array
     y,x=np.shape(framepar) # find the y,x of the array 
-    frtot=fileptr.n_frames # find the total number of frames
+    
+    frtot=par.apmax_fr      #fileptr.n_frames # find the total number of frames
+    #print(frtot)
     ycrop=(y//bksize)*bksize
     xcrop=(x//bksize)*bksize
     print ("x pixels: %d. y pixels: %d r %d" %(x,y,bksize))
@@ -74,17 +79,20 @@ def ffp_tif(filename,xmlname):
         
         #start reading in frame sets
         currset_st = int(par.start_frame)#start frame of the current set of interest
-        currset_st=0
+        #currset_st=
         frames = np.zeros((ycrop,xcrop,par.frameset)) #note: x value is column, y value is row.
         print ("number sets: %i" %no_sets)
         for i in range(0,no_sets): #goes from 0 to no_sets -1
             if i % 1000 == 0: print ("working on %i"  %i) #keep track of progress
             for k in range(0,par.frameset):
-                frame = loadframetif.load_tif(fileptr,currset_st+k)   
+                #print(currset_st+k)
+                
+                frame = loadframetif.load_tif(filename,currset_st+k) 
+                frame.astype(float)
                 framecropped=frame[:ycrop,:xcrop] #new frame selection based off cropping for smbkgr
                 #im =Image.fromarray(frame)
                 #im.show()
-                frame.astype(float) #change to float
+                #change to float
                 frames[:,:,k] = framecropped 
                 
             #if ALEX4 =1, pick out subset of frames to be used, based on pickcol. otherwise, use all frames
@@ -300,7 +308,7 @@ def ffp_tif(filename,xmlname):
     # writexml.write_xml(par,outxml,'ffpdax',filename,[no_com,np.mean(times),np.median(times)])
 
     #close the dax file
-    fileptr.close()
+    #fileptr.close()
 
     print ("done at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
