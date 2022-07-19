@@ -7,8 +7,8 @@ Created on Mon Oct 11 15:26:29 2021
 
 import numpy as np 
 from PIL import Image
-
-def load_tif(fileptr,frnum):
-    fileptr.seek(frnum)
-    frame=np.array(fileptr)
+from skimage import io
+def load_tif(filename,frnum):
+    frame = io.imread(filename+'.tif', img_num=frnum)
+    #frame=np.array(fileptr)
     return frame
