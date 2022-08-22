@@ -107,7 +107,7 @@ def disp_hist(file,perCol,perRow):
   
         # resize image
         resized = cv2.resize(imgcrop, dim, interpolation = cv2.INTER_AREA)
-        cv2.imshow('2D Histogram [PK# t1 t2]',resized )
+        cv2.imshow('2D Histogram [PK# t1 t2]',imgcrop )
         cv2.namedWindow('2D Histogram [PK# t1 t2]')
         cv2.setMouseCallback('2D Histogram [PK# t1 t2]', click_event)
         key=cv2.waitKey(0)
