@@ -1492,8 +1492,10 @@ def graph(plot_type, *graph_parameters):
             # y = dfs[i].iloc[:,y_unit]
             z = dfs[i].iloc[:,7]
             ax = fig.add_subplot(gs[i])
+            ax.set_title(dfs[i].index[0])
             do_plot(ax)
             i+= 1
+
         if save_plot == "yes":
             
             framestr = '{}'.format(frames_per_plot)
@@ -1776,7 +1778,7 @@ def filter_centers(*relevant_parameters):
     my_saving_path = os.path.join(path_OG, name_saving_folder)
     #for the current file,  f, in the files that passed
     for f in passing_files:
-        shutil.copy(f, my_saving_path) #shuttle it to the name saving folder
+        shutil.copy(f, my_saving_path) #shuttle it to the name saving 
         print(f"I have moved {f} to {name_saving_folder}")
 
     return  passing_files, Center_Checkpoint
