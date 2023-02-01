@@ -1448,7 +1448,7 @@ def graph(plot_type, *graph_parameters):
         # the grid_plot graph type runs best when this function is defined here and is called under plot_type == grid_plot if statement
         def do_plot(ax):
             #regular graphing parameters for 2D graph (color of scatter, size, shape, tick marks, etc.)
-            colors = cm.Greens(np.linspace(0, 1, len(z)))
+            colors = cm.spring(np.linspace(0, 1, len(z)))
             p=ax.scatter(x, y, c=colors)
             #fig = plt.figure(figsize=(6,6), dpi=100)
             tix = np.linspace(0,len(z),6)
