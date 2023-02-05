@@ -1536,6 +1536,8 @@ def table(*table_parameters):
     data, xy_goodbad, avt_good, avt_bad, data_fil_dsa, data_fil_down_bad, data_fil_up_bad = AngleCalc.avt_filter(
         *inputs_avt_filter)
 
+    print("Checkpoint 1 PASSED: imported function parameters")
+
     ################################### [Final Data Table Assembly ] ######################################
 
     # Organzize Data Table with Final Filtered Data [Re insert sus points from lower and upper bound filtering]
@@ -1581,6 +1583,9 @@ def table(*table_parameters):
     data_final_final["Excluded Type"] = dummy_vec
     data_final_final = data_final_final[[
         "index", "Time (ms)", "Angle", "Delta Angle", "Continuous Angle", "Excluded Type"]]
+
+
+    print("Checkpoint 2 passed: all data is processed")
 
     if save_table == "yes":
         my_title = file_name + "_Final_DataTable.csv"
