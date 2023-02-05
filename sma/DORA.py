@@ -3,7 +3,7 @@
 
 """
 @author: Jerry Wu
-Last Update: 4.23.2022
+Last Update: 2.5.23
 """
 # Note 1: This is the block with all the required imports
 
@@ -1512,6 +1512,9 @@ Template for DataTable inputs
 
 table_parameters = [down_sampled_df, ind_invalid_reading, rad_filter_type_upper,
                     rad_filter_type_lower, z_up, z_down, dist_high, dist_low, bin_size, data_back,save_table,file_name]
+
+data, avt_good, avt_bad, data_final_final = DORA.table(*table_parameters)
+
                     
 '''
 
@@ -1782,6 +1785,31 @@ def filter_centers(*relevant_parameters):
         print(f"I have moved {f} to {name_saving_folder}")
 
     return  passing_files, Center_Checkpoint
+
+
+# purpose: When analyzing bring spots (non circular, just the grounded oligo), find center by binning the data and finding the brightest spot. This new spot is the center.
+def find_center_hist_max(x, y,bin_num):
+            # find the center of a plot using a low resolution histogram. Find the max value of that histogram. The corresponding x and y indicies become those of the center make the center
+            H, xedges , yedges = np.histogram2d(x,y, bins = bin_num)
+
+            #find the x and y index of the maximum value histogram 
+            indMax = np.unravel_index(H.argmax(),H.shape)
+
+            #Set the value of the max x and y indexes to be the new OR(OverRidden) center
+            center_OR = [xedges[indMax[0]],yedges[indMax[1]]]
+
+            plt.hist2d(x,y,bins = bin_num, cmap = "viridis")
+            plt.scatter(x = center_OR[0], y= center_OR[1], color = "magenta")
+            plt.text(x= center_OR [0] + 0.02, y= center_OR[1] + 0.02, s='CENTER')
+
+            # Add title and axis names
+            plt.title('2D Histogram of Centered Data')
+            plt.xlabel('X pixels')
+            plt.ylabel('Y pixels')
+            plt.show()
+            
+            #return the center found
+            return center_OR
 
     
 
